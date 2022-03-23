@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Script para automatizar a geração de builds",
   "main": "index.js",
+  "bin": {
+    "eslint": "./index.js"
+  },
   "repository": "git@github.com:isaac-oliveira/poplane.git",
   "author": "isaac-oliveira <isaac.oliveira@popcode.com.br>",
   "license": "MIT"
