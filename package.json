@@ -6,6 +6,7 @@
   "bin": {
     "poplane": "./index.js"
   },
+  "private": false,
   "repository": "git@github.com:isaac-oliveira/poplane.git",
   "author": "isaac-oliveira <isaac.oliveira@popcode.com.br>",
   "license": "MIT"
