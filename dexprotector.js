@@ -21,7 +21,7 @@ const wasDexprotectorFound = () => {
   } catch (e) {
     console.error("\nSorry about that :(");
 
-    const sourcePath = path.join(__dirname, "..", "android", "app");
+    const sourcePath = path.join(__dirname, "..", "..", "android", "app");
     const gradleFilePath = path.join(sourcePath, "build.gradle");
     const backupFilePath = path.join(
       sourcePath,

@@ -3,7 +3,7 @@
 const path = require("path");
 const fs = require("fs");
 
-const androidPath = path.join(__dirname, "..", "android", "app");
+const androidPath = path.join(__dirname, "..", "..", "android", "app");
 
 const configApk = path.join(androidPath, "dexprotector-config-apk.xml");
 const configAab = path.join(androidPath, "dexprotector-config-aab.xml");

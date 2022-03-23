@@ -4,9 +4,10 @@ const path = require("path");
 const fs = require("fs");
 
 const main = (version, buildNumber) => {
-  const packagePath = path.join(__dirname, "..", "package.json");
+  const packagePath = path.join(__dirname, "..", "..", "package.json");
   const androidPath = path.join(
     __dirname,
+    "..",
     "..",
     "android",
     "app",
@@ -15,12 +16,14 @@ const main = (version, buildNumber) => {
   const iosInfoPath = path.join(
     __dirname,
     "..",
+    "..",
     "ios",
     "tkslojista",
     "Info.plist"
   );
   const iosProjectPath = path.join(
     __dirname,
+    "..",
     "..",
     "ios",
     "tkslojista.xcodeproj",
