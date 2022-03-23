@@ -1,47 +1,49 @@
-const { execSync } = require('child_process')
+#!/usr/bin/env node
 
-const dexprotector = require('./dexprotector')
+const { execSync } = require("child_process");
 
-const supportedOS = ['android', 'ios']
+const dexprotector = require("./dexprotector");
 
-let envParam = null
+const supportedOS = ["android", "ios"];
+
+let envParam = null;
 
 const main = async (os, lane, env, certificates = false, isAab = false) => {
-  if (os === 'android' && lane === 'release') {
-    envParam = `env:${env} isAab:${isAab}`
+  if (os === "android" && lane === "release") {
+    envParam = `env:${env} isAab:${isAab}`;
   } else {
-    envParam = `env:${env}`
+    envParam = `env:${env}`;
   }
 
   if (!os || !supportedOS.includes(os)) {
-    throw new Error('You must provide a valid OS (either "android" or "ios")')
+    throw new Error('You must provide a valid OS (either "android" or "ios")');
   }
 
   const runFastlane = () => {
     execSync(`fastlane ${lane} ${envParam}`, {
       cwd: os,
-      encoding: 'utf-8',
-      stdio: 'inherit'
-    })
-  }
+      encoding: "utf-8",
+      stdio: "inherit",
+    });
+  };
 
   try {
-    if (os === 'android' && (lane === 'release' || lane === 'store')) {
-      await dexprotector(runFastlane, lane, isAab)
+    if (os === "android" && (lane === "release" || lane === "store")) {
+      await dexprotector(runFastlane, lane, isAab);
     } else {
-      if (os === 'ios' && certificates) {
-        execSync('fastlane certificates', {
+      if (os === "ios" && certificates) {
+        execSync("fastlane certificates", {
           cwd: os,
-          encoding: 'utf-8',
-          stdio: 'inherit'
-        })
+          encoding: "utf-8",
+          stdio: "inherit",
+        });
       }
-      runFastlane()
+      runFastlane();
     }
   } catch (e) {
-    console.error(e)
-    console.error('\nSorry about that :(')
+    console.error(e);
+    console.error("\nSorry about that :(");
   }
-}
+};
 
-module.exports = main
+module.exports = main;
