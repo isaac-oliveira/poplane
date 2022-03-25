@@ -1,0 +1,110 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+
+
+fastlane_require 'dotenv'
+default_platform(:android)
+
+require "./popcode.rb"
+
+before_all do |lane, options|
+  @changelog = changelog_from_git_commits(
+    commits_count: 10,
+    pretty: '- %s',
+    tag_match_pattern: nil,
+    match_lightweight_tag: false,
+    include_merges: false
+  )
+end
+
+platform :android do
+  desc "Envia uma build para testar o Fastlane"
+  lane :test do
+      increment_version_code(
+          gradle_file_path: "./app/build.gradle",
+      )
+      gradle(task: "clean")
+      gradle(task: Popcode::Task::Debug)
+
+      firebase_app_distribution(
+          app: Popcode::Firebase::AppIdDebug,
+          groups: "<groups>", # Você precisa alterar esse campo
+          release_notes: @changelog,
+          firebase_cli_path: "/usr/local/bin/firebase"
+      )
+  end
+
+  desc "Envia uma build de Desenvolvimento para o Firebase"
+  lane :development do
+      increment_version_code(
+          gradle_file_path: "./app/build.gradle",
+      )
+      gradle(task: "clean")
+      gradle(task: Popcode::Task::Staging)
+
+      firebase_app_distribution(
+          app: Popcode::Firebase::AppIdStaging,
+          groups: "<groups>", # Você precisa alterar esse campo
+          release_notes: @changelog,
+          firebase_cli_path: "/usr/local/bin/firebase"
+      )
+  end
+
+  desc "Envia uma build de Homologação para o Firebase"
+  lane :staging do
+      increment_version_code(
+          gradle_file_path: "./app/build.gradle",
+      )
+      gradle(task: "clean")
+      gradle(task: Popcode::Task::Staging)
+
+      firebase_app_distribution(
+          app: Popcode::Firebase::AppIdStaging,
+          groups: "<groups>", # Você precisa alterar esse campo
+          release_notes: @changelog,
+          firebase_cli_path: "/usr/local/bin/firebase"
+      )
+  end
+
+  desc "Envia uma build de Produção para o Firebase"
+  lane :release do |options|
+      isAab = options[:isAab] != nil ? options[:isAab] : true
+      increment_version_code(
+          gradle_file_path: "./app/build.gradle",
+      )
+      gradle(task: "clean")
+      gradle(task: isAab ? Popcode::Task::AabProduction : Popcode::Task::ApkProduction)
+
+      firebase_app_distribution(
+          app: Popcode::Firebase::AppIdProduction,
+          groups: "<groups>", # Você precisa alterar esse campo
+          release_notes: @changelog,
+          firebase_cli_path: "/usr/local/bin/firebase",
+          android_artifact_type: isAab ? "AAB" : "APK"
+      )
+  end
+
+  desc "Envia uma nova versão para App Store"
+  lane :store do
+      increment_version_code(
+          gradle_file_path: "./app/build.gradle",
+      )
+      gradle(task: "clean")
+      gradle(task: Popcode::Task::AabProduction)
+
+      upload_to_play_store(track: '<playStoreTack>') # Você precisa alterar esse campo
+  end
+end

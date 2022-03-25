@@ -1,92 +1,67 @@
 #!/usr/bin/env node
 
-const path = require("path");
-const fs = require("fs");
+const projectPaths = require('./project-paths')
+const fs = require('fs')
+
+const { packageFilePath, androidGradleAppFile, iosInfoplistFile, iosXcodeprojFile } = projectPaths
+
+const filesInfo = {
+  android: {
+    version: /(versionName ")\d+\.\d+\.\d+/,
+    buildNumber: /(versionCode )\d+/,
+    path: androidGradleAppFile
+  },
+  iosInfoplist: {
+    version: /(<key>CFBundleShortVersionString<\/key>.*[\n]*.*<string>)\d+\.\d+\.\d+/,
+    buildNumber: /(<key>CFBundleVersion<\/key>.*[\n]*.*<string>)\d+/,
+    path: iosInfoplistFile
+  },
+  iosXcodeproj: {
+    version: /(MARKETING_VERSION = )\d+\.\d+\.\d+/g,
+    buildNumber: /(CURRENT_PROJECT_VERSION = )\d+/g,
+    path: iosXcodeprojFile
+  },
+  package: {
+    version: /("version": ")\d+\.\d+\.\d+/,
+    path: packageFilePath
+  }
+}
 
 const main = (version, buildNumber) => {
-  const packagePath = path.join(__dirname, "..", "..", "package.json");
-  const androidPath = path.join(
-    __dirname,
-    "..",
-    "..",
-    "android",
-    "app",
-    "build.gradle"
-  );
-  const iosInfoPath = path.join(
-    __dirname,
-    "..",
-    "..",
-    "ios",
-    "tkslojista",
-    "Info.plist"
-  );
-  const iosProjectPath = path.join(
-    __dirname,
-    "..",
-    "..",
-    "ios",
-    "tkslojista.xcodeproj",
-    "project.pbxproj"
-  );
-
+  const { android, iosInfoplist, iosXcodeproj, package } = filesInfo
   if (checkVersionFormat(version)) {
-    updateVersion(
-      packagePath,
-      /("version": )"\d+\.\d+\.\d+"/,
-      `$1"${version}"`
-    );
-    updateVersion(
-      androidPath,
-      /(versionName )"\d+\.\d+\.\d+"/,
-      `$1"${version}"`
-    );
-    updateVersion(
-      iosProjectPath,
-      /(MARKETING_VERSION = )\d+\.\d+\.\d+/g,
-      `$1${version}`
-    );
-    updateVersion(
-      iosInfoPath,
-      /(<key>CFBundleShortVersionString<\/key>\n[\t ]+<string>)\d+\.\d+\.\d+(<\/string>)/,
-      `$1${version}$2`
-    );
+    updateVersion(package.path, package.version, version)
+    updateVersion(android.path, android.version, version)
+    updateVersion(iosXcodeproj.path, iosXcodeproj.version, version)
+    updateVersion(iosInfoplist.path, iosInfoplist.version, version)
   }
 
   if (checkBuildNumber(buildNumber)) {
-    updateVersion(androidPath, /(versionCode )\d+/, `$1${buildNumber - 1}`);
-    updateVersion(
-      iosProjectPath,
-      /(CURRENT_PROJECT_VERSION = )\d+/g,
-      `$1${buildNumber - 1}`
-    );
-    updateVersion(
-      iosInfoPath,
-      /(<key>CFBundleVersion<\/key>\n[\t ]+<string>)\d+(<\/string>)/,
-      `$1${buildNumber - 1}$2`
-    );
+    updateVersion(android.path, android.buildNumber, buildNumber)
+    updateVersion(iosXcodeproj.path, iosXcodeproj.buildNumber, buildNumber)
+    updateVersion(iosInfoplist.path, iosInfoplist.buildNumber, buildNumber)
+  }
+}
+
+function checkBuildNumber(buildNumber) {
+  return buildNumber && /\d+/.test(buildNumber)
+}
+
+function checkVersionFormat(version) {
+  if (!version || !/^[0-9.]*$/.test(version)) {
+    return false
   }
 
-  function checkBuildNumber(buildNumber) {
-    return buildNumber && /\d+/.test(buildNumber);
-  }
+  const splitVersion = version.split('.')
+  const filteredVersion = splitVersion.filter((item) => !!item)
 
-  function checkVersionFormat(version) {
-    if (!version || !/^[0-9.]*$/.test(version)) {
-      return false;
-    }
+  return filteredVersion.length === 3
+}
 
-    const splitVersion = version.split(".");
-    const filteredVersion = splitVersion.filter((item) => !!item);
+function updateVersion(filePath, searchValue, value) {
+  const fileContent = fs.readFileSync(filePath, { encoding: 'utf-8' })
+  const newFileContent = fileContent.replace(searchValue, `$1${value}`)
+  fs.writeFileSync(filePath, newFileContent, { encoding: 'utf-8' })
+}
 
-    return filteredVersion.length === 3;
-  }
-
-  function updateVersion(filePath, searchValue, replaceValue) {
-    const fileContent = fs.readFileSync(filePath, { encoding: "utf-8" });
-    const newFileContent = fileContent.replace(searchValue, replaceValue);
-    fs.writeFileSync(filePath, newFileContent, { encoding: "utf-8" });
-  }
-};
-
-module.exports = main;
+module.exports = main

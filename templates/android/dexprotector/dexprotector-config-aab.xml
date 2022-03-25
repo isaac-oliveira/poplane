@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<dexprotector>
+    <verbose>true</verbose>
+    <optimize>false</optimize>
+    <signMode>google</signMode>
+    <keystore>YOUR_KEYSTORE</keystore>
+    <alias>YOUR_ALIAS</alias>
+    <storepass>YOUR_STOREPASS</storepass>
+    <keypass>YOUR_KEYPASS</keypass>
+    <sha256CertificateFingerprint>YOUR_FIREBASE_CERTIFICATEFINGERPRINT</sha256CertificateFingerprint>
+    <securityAssessment mode="on">
+        <signingCertificateCompromised mode="error"/>
+        <signingCertificateWeakKey mode="error"/>
+    </securityAssessment>
+    <classEncryption mode="all"/>
+    <hideAccess mode="all">
+        <filters>
+            <filter><![CDATA[glob:!com/facebook/**]]></filter>
+            <filter><![CDATA[glob:!androidx/**]]></filter>
+        </filters>
+    </hideAccess>
+    <resourceEncryption idObfuscationMode="auto" mode="all" nameObfuscation="on">
+        <assets mode="all"/>
+    </resourceEncryption>
+    <integrityControl mode="all">
+        <checkCertificate>on</checkCertificate>
+    </integrityControl>
+    <antiDebug>true</antiDebug>
+</dexprotector>

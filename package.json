@@ -4,10 +4,16 @@
   "description": "Script para automatizar a geração de builds",
   "main": "index.js",
   "bin": {
-    "poplane": "./index.js"
+    "poplane": "./cli.js"
+  },
+  "scripts": {
+    "poplane": "node ./cli.js"
   },
   "private": false,
   "repository": "git@github.com:isaac-oliveira/poplane.git",
   "author": "isaac-oliveira <isaac.oliveira@popcode.com.br>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "minimist": "^1.2.6"
+  }
 }
