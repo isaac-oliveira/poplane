@@ -27,7 +27,7 @@ const findInfo = {
   }
 }
 
-const main = () => {
+const main = ({ version, buildNumber }) => {
   let iOSVersion = ''
   let packageVersion = ''
   let androidVersion = ''
@@ -35,7 +35,7 @@ const main = () => {
   const { android } = findInfo
   const versionGradle = foundRegexInFile(androidGradleAppFile, android.version, '$1')
   const buildNumberGradle = foundRegexInFile(androidGradleAppFile, android.buildNumber, '$1')
-  androidVersion = `${versionGradle} (${Number(buildNumberGradle) + 1})`
+  androidVersion = `${version || versionGradle} (${buildNumber ? Number(buildNumber) : Number(buildNumberGradle) + 1})`
 
   const { iosInfoplist, iosXcodeproj } = findInfo
 
@@ -45,10 +45,12 @@ const main = () => {
   const versionXcodeproj = foundRegexInFile(iosXcodeprojFile, iosXcodeproj.version, '$1')
   const buildNumberXcodeproj = foundRegexInFile(iosXcodeprojFile, iosXcodeproj.buildNumber, '$1')
 
-  iOSVersion = `${versionInfo || versionXcodeproj} (${Number(buildNumberInfo || buildNumberXcodeproj) + 1})`
+  iOSVersion = `${version || versionInfo || versionXcodeproj} (${
+    buildNumber ? Number(buildNumber) : Number(buildNumberInfo || buildNumberXcodeproj) + 1
+  })`
 
   const { package } = findInfo
-  packageVersion = foundRegexInFile(packageFilePath, package.version, '$1')
+  packageVersion = version || foundRegexInFile(packageFilePath, package.version, '$1')
 
   return { packageVersion, androidVersion, iOSVersion }
 }

@@ -37,9 +37,9 @@ const main = (version, buildNumber) => {
   }
 
   if (checkBuildNumber(buildNumber)) {
-    updateVersion(android.path, android.buildNumber, buildNumber)
-    updateVersion(iosXcodeproj.path, iosXcodeproj.buildNumber, buildNumber)
-    updateVersion(iosInfoplist.path, iosInfoplist.buildNumber, buildNumber)
+    updateVersion(android.path, android.buildNumber, buildNumber - 1)
+    updateVersion(iosXcodeproj.path, iosXcodeproj.buildNumber, buildNumber - 1)
+    updateVersion(iosInfoplist.path, iosInfoplist.buildNumber, buildNumber - 1)
   }
 }
 

@@ -44,9 +44,8 @@ try {
   const main = async () => {
     try {
       validateInputs({ os, env, version, buildNumber, flags })
-      updateVersion(version, Number(buildNumber))
 
-      const buildInfo = getBuildInfo()
+      const buildInfo = getBuildInfo({ version, buildNumber })
       const { androidVersion, iOSVersion, packageVersion } = buildInfo
 
       if (os === 'both') {
@@ -59,6 +58,7 @@ try {
 
       const response = await io.question('\nConfira se as variáveis estão corretas. Podemos prosseguir? (s/n): ')
       if (response === 's') {
+        updateVersion(version, Number(buildNumber))
         if (os === 'both') {
           await fastlane('android', lane, env, false, isAab)
           fastlane('ios', lane, env, certificates)
