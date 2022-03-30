@@ -36,6 +36,8 @@ Inicializar apenas os arquivos do dexprotector
 yarn poplane init --dexprotector
 ```
 
+Obs: Caso você já use o fastlane e/ou dexprotector, você pode verificar os [templates](/templates) para tentar replicar as configurações.
+
 # Geração de versões
 
 ## Estrutura
@@ -51,10 +53,24 @@ Os flags seguem os mesmos padrões dos args.
 ### Lane
 
 - test
+
+  Essa lane servi para realizar testes no fastlane
+
 - development
+
+  Essa lane é usada para compartilhar uma versão funcional entre os devs
+
 - staging
+
+  Essa lane é usada para compartilhar uma versão de homologação para os devs, clientes e alguns membros da empresa
+
 - release
+
+  Essa lane gera uma versão identica a que vai para a loja
+
 - store
+
+  Essa lane sobe uma versão para as lojas (App Store e Google Play)
 
 ### Args
 
@@ -79,18 +95,36 @@ Os flags seguem os mesmos padrões dos args.
   string no formato: x.x.x
 
 - buildNumber(opcional)
+
   inteiro equivalente ao versionCode e versionNumber
 
 ### Flags
 
 - os
+
   - --ios
+
+    Gera apenas uma versão iOS
+
   - –-android
+
+    Gera apenas uma versão android
+
 - androidExtension
+
   - --apk
+
+    Gera uma versão android com a extensão APK
+
   - –-aab
+
+    Gera uma versão android com a extensão ABB
+
 - certificate
+
   - --certificate
+
+    Roda os certificados do iOS antes de gerar a versão
 
 ## Gera versões para as duas plataformas
 
