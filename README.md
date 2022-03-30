@@ -7,13 +7,13 @@ Requisitos para aplicar o poplane:
 Para adicionar no projeto execute:
 
 ```cmd
-yarn add poplane --dev
+yarn add poplane@https://github.com/isaac-oliveira/poplane.git#develop --dev
 ```
 
 ou
 
 ```cmd
-npm i poplane --dev
+npm i poplane@https://github.com/isaac-oliveira/poplane.git#develop  --dev
 ```
 
 Caso você queira utilizar o script em um projeto que ainda não tem o dexprotector ou fastlane você pode utilizar o `init` para gerar os arquivos do fastlane e dexprotector.
