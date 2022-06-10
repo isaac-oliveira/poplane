@@ -43,7 +43,7 @@ const buildProtectedVersion = (runFastlane) => {
   io.log('A Dexprotector version was found 🔒', 'green')
   io.log('Here we go...\n')
 
-  const sourcePath = path.join(__dirname, '..', 'android', 'app')
+  const sourcePath = path.join(__dirname, '..', '..', 'android', 'app')
   const gradleFilePath = path.join(sourcePath, 'build.gradle')
   const backupFilePath = path.join(sourcePath, 'build.gradle-dexprotector-backup')
 
