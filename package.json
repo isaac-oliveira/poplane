@@ -1,6 +1,6 @@
 {
   "name": "poplane",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Script para automatizar a geração de builds",
   "main": "index.js",
   "bin": {
