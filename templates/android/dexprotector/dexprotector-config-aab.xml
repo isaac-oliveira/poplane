@@ -9,9 +9,12 @@
     <keypass>YOUR_KEYPASS</keypass>
     <sha256CertificateFingerprint>YOUR_FIREBASE_CERTIFICATEFINGERPRINT</sha256CertificateFingerprint>
     <securityAssessment mode="on">
+        <detectExposedSecrets mode="warning" report=""/>
+        <dependencyCheck mode="warning" report=""/>
         <signingCertificateCompromised mode="error"/>
         <signingCertificateWeakKey mode="error"/>
     </securityAssessment>
+    <stringEncryption mode="all"/>
     <classEncryption mode="all"/>
     <hideAccess mode="all">
         <filters>
@@ -19,11 +22,21 @@
             <filter><![CDATA[glob:!androidx/**]]></filter>
         </filters>
     </hideAccess>
-    <resourceEncryption idObfuscationMode="auto" mode="all" nameObfuscation="on">
+    <resourceEncryption androidManifestMangling="on" mode="all">
+        <androidManifestMangling mode="all"/>
         <assets mode="all"/>
+        <nameObfuscation mode="all"/>
+        <strings mode="all"/>
     </resourceEncryption>
     <integrityControl mode="all">
         <checkCertificate>on</checkCertificate>
     </integrityControl>
     <antiDebug>true</antiDebug>
+    <antiEmulator>true</antiEmulator>
+    <antiManualInstall>false</antiManualInstall>
+    <antiMalware>false</antiMalware>
+    <antiXposed>true</antiXposed>
+    <nativeLibraryEncryption mode="all"/>
+    <runtimeChecks/>
+    <uiProtection/>
 </dexprotector>

@@ -2,35 +2,35 @@
 
 const defaultValue = {
   test: {
-    env: 'debug',
+    env: "debug",
     version: undefined,
-    os: 'both',
-    isAab: false
+    os: "both",
+    isAab: false,
   },
   development: {
-    env: 'development',
+    env: "development",
     version: undefined,
-    os: 'both',
-    isAab: false
+    os: "both",
+    isAab: false,
   },
   staging: {
-    env: 'staging',
+    env: "staging",
     version: undefined,
-    os: 'both',
-    isAab: false
+    os: "both",
+    isAab: false,
   },
   release: {
-    env: 'production',
+    env: "production",
     version: undefined,
-    os: 'both',
-    isAab: true
+    os: "both",
+    isAab: true,
   },
   store: {
-    env: 'production',
+    env: "production",
     version: undefined,
-    os: 'both',
-    isAab: true
-  }
-}
+    os: "both",
+    isAab: true,
+  },
+};
 
-module.exports = defaultValue
+module.exports = defaultValue;

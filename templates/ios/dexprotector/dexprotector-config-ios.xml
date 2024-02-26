@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<dexprotector>
+    <verbose>true</verbose>
+    <optimize>false</optimize>
+    <signMode>release</signMode>
+    <stringEncryption mode="all"/>
+    <classEncryption mode="all"/>
+    <antiDebug>true</antiDebug>
+    <antiEmulator>true</antiEmulator>
+    <antiManualInstall>false</antiManualInstall>
+    <runtimeChecks>
+        <paranoidMode>true</paranoidMode>
+    </runtimeChecks>
+    <uiProtection/>
+    <ios checkBCSymbolMap="on" generateEnvironmentChecksFramework="off" mode="all" objcUtilClass="on" protectSimulator="off" saveTemps="off" stripBitcode="on" swiftEnvCheckMode="off" trace="0"/>
+</dexprotector>
