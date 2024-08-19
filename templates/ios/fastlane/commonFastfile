@@ -1,0 +1,192 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+fastlane_require 'dotenv'
+default_platform(:ios)
+
+require "./popcode.rb"
+
+# Load correct environment file, the same one used for react-native-config
+
+platform :ios do
+  before_all do |lane, options|
+    @changelog = changelog_from_git_commits(
+      commits_count: 10,
+      pretty: '- %s',
+      tag_match_pattern: nil,
+      match_lightweight_tag: false,
+      include_merges: false
+    )
+
+    app_store_connect_api_key(
+      key_id: "<key_id>", # Você precisa alterar esse campo
+      issuer_id: "<issuer_id>", # Você precisa alterar esse campo
+      key_filepath: "<key_filepath>", # Você precisa alterar esse campo
+      duration: 500,
+      in_house: false,
+    )
+
+    @export_options_appstore = {
+      "provisioningProfiles": {
+        "#{Popcode::AppIdentifier::Production}": "match AppStore #{Popcode::AppIdentifier::Production}",
+      },
+      "method": "app-store",
+      "signingStyle": "manual",
+    }
+
+    @export_options_adhoc = {
+      "provisioningProfiles": {
+        "#{Popcode::AppIdentifier::Production}": "match AdHoc #{Popcode::AppIdentifier::Production}",
+        "#{Popcode::AppIdentifier::Staging}": "match AdHoc #{Popcode::AppIdentifier::Staging}",
+        "#{Popcode::AppIdentifier::Debug}": "match AdHoc #{Popcode::AppIdentifier::Debug}",
+      },
+      "method": "ad-hoc",
+      "signingStyle": "manual",
+    }
+
+  end
+
+  lane :certificates do
+    register_devices(
+      devices_file: "./fastlane/devices.txt", # Você precisa criar esse arquivo, caso ele não exista
+    )
+
+    match(app_identifier: Popcode::AppIdentifier::Production, type: "development", readonly: false, force_for_new_devices: true, team_id: Popcode::TeamId)
+    match(app_identifier: Popcode::AppIdentifier::Production, type: "adhoc", readonly: false, force_for_new_devices: true, team_id: Popcode::TeamId)
+    match(app_identifier: Popcode::AppIdentifier::Production, type: "appstore", readonly: false, force_for_new_devices: false, team_id: Popcode::TeamId)
+    match(app_identifier: Popcode::AppIdentifier::Staging, type: "development", readonly: false, force_for_new_devices: true, team_id: Popcode::TeamId)
+    match(app_identifier: Popcode::AppIdentifier::Staging, type: "adhoc", readonly: false, force_for_new_devices: true, team_id: Popcode::TeamId)
+    match(app_identifier: Popcode::AppIdentifier::Staging, type: "appstore", readonly: false, force_for_new_devices: false, team_id: Popcode::TeamId)
+    match(app_identifier: Popcode::AppIdentifier::Debug, type: "development", readonly: false, force_for_new_devices: true, team_id: Popcode::TeamId)
+    match(app_identifier: Popcode::AppIdentifier::Debug, type: "adhoc", readonly: false, force_for_new_devices: true, team_id: Popcode::TeamId)
+    match(app_identifier: Popcode::AppIdentifier::Debug, type: "appstore", readonly: false, force_for_new_devices: false, team_id: Popcode::TeamId)
+  end
+
+  desc "Envia uma build para testar o Fastlane"
+  lane :test do
+    clear_derived_data
+    increment_build_number
+
+    match(app_identifier: "#{Popcode::AppIdentifier::Debug}", type: "adhoc", force_for_new_devices: true)
+
+    gym({
+      export_method: "ad-hoc",
+      export_options: @export_options_adhoc,
+      scheme: Popcode::Scheme::Debug,
+      silent: true,
+      suppress_xcode_output: true,
+      configuration: Popcode::Configuration::Debug
+    })
+
+    firebase_app_distribution(
+      app: Popcode::Firebase::AppIdDebug,
+      release_notes: @changelog,
+      groups: "<groups>", # Você precisa alterar esse campo
+    )
+  end
+
+  desc "Envia uma build de Desenvolvimento para o Firebase"
+  lane :development do
+    clear_derived_data
+    increment_build_number
+
+    match(app_identifier: "#{Popcode::AppIdentifier::Staging}", type: "adhoc", force_for_new_devices: true)
+
+    gym({
+      export_method: "ad-hoc",
+      export_options: @export_options_adhoc,
+      scheme: Popcode::Scheme::Staging,
+      silent: true,
+      suppress_xcode_output: true,
+      configuration: Popcode::Configuration::Staging
+    })
+
+    firebase_app_distribution(
+      app: Popcode::Firebase::AppIdStaging,
+      release_notes: @changelog,
+      groups: "<groups>", # Você precisa alterar esse campo
+    )
+  end
+
+  desc "Envia uma build de Homologação para o Firebase"
+  lane :staging do
+    clear_derived_data
+    increment_build_number
+
+    match(app_identifier: "#{Popcode::AppIdentifier::Staging}", type: "adhoc", force_for_new_devices: true)
+
+    gym({
+      export_method: "ad-hoc",
+      export_options: @export_options_adhoc,
+      scheme: Popcode::Scheme::Staging,
+      silent: true,
+      suppress_xcode_output: true,
+      configuration: Popcode::Configuration::Staging
+    })
+
+    firebase_app_distribution(
+      app:  Popcode::Firebase::AppIdStaging,
+      release_notes: @changelog,
+      groups: "<groups>", # Você precisa alterar esse campo
+    )
+
+  end
+
+  desc "Envia uma build de Produção para o Firebase"
+  lane :release do
+    clear_derived_data
+    increment_build_number
+
+    match(app_identifier: "#{Popcode::AppIdentifier::Production}", type: "adhoc", force_for_new_devices: true)
+
+    gym({
+      export_method: "ad-hoc",
+      export_options: @export_options_adhoc,
+      scheme: Popcode::Scheme::Production,
+      silent: true,
+      suppress_xcode_output: true,
+      configuration: Popcode::Configuration::Production
+    })
+
+    firebase_app_distribution(
+      app:  Popcode::Firebase::AppIdProduction,
+      release_notes: @changelog,
+      groups: "<groups>", # Você precisa alterar esse campo
+    )
+
+  end
+
+  desc "Envia uma nova versão para App Store"
+  lane :store do
+    clear_derived_data
+    increment_build_number()
+
+    match(app_identifier: "#{Popcode::AppIdentifier::Production}", type: "appstore", force_for_new_devices: true)
+
+    gym({
+      scheme: Popcode::Scheme::Production,
+      export_method: "app-store",
+      export_options: @export_options_appstore,
+      silent: true,
+      suppress_xcode_output: true,
+    })
+
+    pilot(
+      app_identifier: Popcode::AppIdentifier::Production,
+      verbose: false,
+      distribute_external: true,
+    )
+  end
+end
